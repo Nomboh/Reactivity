@@ -14,6 +14,7 @@ function NavBar() {
           Reactivity
         </Menu.Item>
         <Menu.Item name="Activities" as={NavLink} to="/activities" />
+        <Menu.Item name="Error" as={NavLink} to="/errors" />
         <Menu.Item>
           <Button
             as={NavLink}
