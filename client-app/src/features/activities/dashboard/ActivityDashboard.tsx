@@ -15,7 +15,8 @@ function ActivityDashboard() {
     loadActivities();
   }, [loadActivities]);
 
-  if (loadingInitial) return <LoadingComponent content="Loading app" />;
+  if (loadingInitial)
+    return <LoadingComponent content="Loading activities..." />;
   return (
     <Grid>
       <Grid.Column width={"10"}>
