@@ -26,7 +26,6 @@ namespace Infrastructure.Photos
         async Task<PhotoUploadResult> IPhotoAccessor.AddPhoto(IFormFile file)
         {
             if(file.Length > 0){
-                Console.WriteLine(file);
                 await using var stream = file.OpenReadStream();
                 var uploadParams = new ImageUploadParams{
                     File = new FileDescription(file.FileName, stream),
