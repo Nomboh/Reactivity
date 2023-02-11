@@ -1,7 +1,8 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { toast, ToastContent } from "react-toastify";
 import { Activity, ActivityFormValue } from "../Model/activity";
-import { Photo, Profile } from "../Model/profile";
+import { PaginatedResult } from "../Model/pagination";
+import { Photo, Profile, UserActivity } from "../Model/profile";
 import { ServerError } from "../Model/serverError";
 import { User, UserFormValue } from "../Model/user";
 import { router } from "../router/Router";
@@ -24,6 +25,16 @@ axios.interceptors.request.use(config => {
 axios.interceptors.response.use(
   async response => {
     await sleep(1000);
+
+    var pagination = response.headers["pagination"];
+
+    if (pagination) {
+      response.data = new PaginatedResult(
+        response.data,
+        JSON.parse(pagination)
+      );
+      return response as AxiosResponse<PaginatedResult<any>>;
+    }
     return response;
   },
   (error: AxiosError) => {
@@ -82,7 +93,10 @@ const request = {
 };
 
 const Activities = {
-  list: () => request.get<Activity[]>("/activities"),
+  list: (params: URLSearchParams) =>
+    axios
+      .get<PaginatedResult<Activity[]>>("/activities", { params })
+      .then(responseBody),
   details: (id: string) => request.get<Activity>(`/activities/${id}`),
   create: (activity: ActivityFormValue) =>
     request.post<void>("/activities", activity),
@@ -118,6 +132,11 @@ const Profiles = {
   listFollowings: (username: string, predicate: string) => {
     return request.get<Profile[]>(`/follow/${username}?predicate=${predicate}`);
   },
+
+  listActivities: (username: string, predicate: string) =>
+    request.get<UserActivity[]>(
+      `/profile/${username}/activities?predicate=${predicate}`
+    ),
 };
 
 const agent = {
